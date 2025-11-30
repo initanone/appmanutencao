@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/manutencao.dart';
 import '../controllers/manutencao_controller.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class ManutencaoFormPage extends StatefulWidget {
   final Manutencao? manutencao;
@@ -20,6 +22,9 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
   final statusController = TextEditingController();
   final responsavelController = TextEditingController();
 
+  final ImagePicker picker = ImagePicker();
+  XFile? imagemSelecionada;
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +35,18 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
       dataController.text = widget.manutencao!.data;
       statusController.text = widget.manutencao!.status;
       responsavelController.text = widget.manutencao!.responsavel;
+
+      if (widget.manutencao!.imagem != null) {
+        imagemSelecionada = XFile(widget.manutencao!.imagem!);
+      }
+    }
+  }
+  Future<void> escolherImagem() async {
+    final XFile? imagem = await picker.pickImage(source: ImageSource.gallery);
+    if (imagem != null) {
+      setState(() {
+        imagemSelecionada = imagem;
+      });
     }
   }
 
@@ -43,6 +60,7 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
     super.dispose();
   }
 
+
   void salvar() async {
     final manutencao = Manutencao(
       id: widget.manutencao?.id,
@@ -51,6 +69,7 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
       data: dataController.text,
       status: statusController.text,
       responsavel: responsavelController.text,
+      imagem: imagemSelecionada?.path,
     );
 
     if (widget.manutencao == null) {
@@ -93,7 +112,23 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
             TextField(
               controller: responsavelController,
               decoration: const InputDecoration(labelText: "Responsável"),
+            ),const SizedBox(height: 20),
+            Text("Imagem do Equipamento", style: TextStyle(fontWeight: FontWeight.bold)),
+
+            const SizedBox(height: 10),
+
+            if (imagemSelecionada != null)
+              Image.file(
+                File(imagemSelecionada!.path),
+                height: 150,
+              ),
+
+            TextButton.icon(
+              onPressed: escolherImagem,
+              icon: const Icon(Icons.image),
+              label: const Text("Selecionar imagem"),
             ),
+
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: salvar,
