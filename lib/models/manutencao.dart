@@ -5,6 +5,7 @@ class Manutencao {
   String data;
   String status;
   String responsavel;
+  String? imagem;
 
   Manutencao({
     this.id,
@@ -13,9 +14,10 @@ class Manutencao {
     required this.data,
     required this.status,
     required this.responsavel,
+    this.imagem,
   });
 
-  // Converte objeto → Map (para salvar no SQLite)
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -24,10 +26,11 @@ class Manutencao {
       'data': data,
       'status': status,
       'responsavel': responsavel,
+      'imagem': imagem,
     };
   }
 
-  // Converte Map → objeto (para listar do banco)
+
   factory Manutencao.fromMap(Map<String, dynamic> map) {
     return Manutencao(
       id: map['id'],
@@ -36,6 +39,7 @@ class Manutencao {
       data: map['data'],
       status: map['status'],
       responsavel: map['responsavel'],
+      imagem: map['imagem'],
     );
   }
 }

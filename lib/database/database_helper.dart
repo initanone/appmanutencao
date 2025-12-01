@@ -20,8 +20,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeTables,
     );
   }
 
@@ -33,9 +34,15 @@ class DatabaseHelper {
         descricao TEXT NOT NULL,
         data TEXT NOT NULL,
         status TEXT NOT NULL,
-        responsavel TEXT NOT NULL
+        responsavel TEXT NOT NULL,
+        imagem TEXT
       )
     ''');
+  }
+  Future<void> _upgradeTables(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute("ALTER TABLE manutencoes ADD COLUMN imagem TEXT;");
+    }
   }
 
   Future<int> insertManutencao(Manutencao m) async {
@@ -67,4 +74,5 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
-}
+  }
+
