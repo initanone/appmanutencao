@@ -25,11 +25,18 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
   final ImagePicker picker = ImagePicker();
   XFile? imagemSelecionada;
 
+  String gerarDataAtual() {
+    final agora = DateTime.now();
+    return "${agora.day.toString().padLeft(2, '0')}/"
+        "${agora.month.toString().padLeft(2, '0')}/"
+        "${agora.year}";
+  }
   @override
   void initState() {
     super.initState();
 
     if (widget.manutencao != null) {
+      // Modo edição
       equipamentoController.text = widget.manutencao!.equipamento;
       descricaoController.text = widget.manutencao!.descricao;
       dataController.text = widget.manutencao!.data;
@@ -39,23 +46,26 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
       if (widget.manutencao!.imagem != null) {
         imagemSelecionada = XFile(widget.manutencao!.imagem!);
       }
+
+    } else {
+      // Nova manutenção → gera automaticamente
+      dataController.text = gerarDataAtual();     // <<< DATA AUTOMÁTICA
+      statusController.text = "Pendente";         // <<< STATUS AUTOMÁTICO
     }
   }
   Future<void> escolherImagem() async {
     final XFile? imagem = await picker.pickImage(source: ImageSource.gallery);
-    if (imagem != null) {
-      setState(() {
-        imagemSelecionada = imagem;
-      });
+    if (imagem != null) { setState(() { imagemSelecionada = imagem;
+    });
     }
   }
+
 
   @override
   void dispose() {
     equipamentoController.dispose();
     descricaoController.dispose();
     dataController.dispose();
-    statusController.dispose();
     responsavelController.dispose();
     super.dispose();
   }
@@ -66,8 +76,8 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
       id: widget.manutencao?.id,
       equipamento: equipamentoController.text,
       descricao: descricaoController.text,
+      status: widget.manutencao?.status ?? "Pendente",
       data: dataController.text,
-      status: statusController.text,
       responsavel: responsavelController.text,
       imagem: imagemSelecionada?.path,
     );
@@ -103,12 +113,15 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
             ),
             TextField(
               controller: dataController,
+              readOnly: true,
               decoration: const InputDecoration(labelText: "Data"),
             ),
+
             TextField(
               controller: statusController,
               decoration: const InputDecoration(labelText: "Status"),
             ),
+
             TextField(
               controller: responsavelController,
               decoration: const InputDecoration(labelText: "Responsável"),
@@ -133,6 +146,28 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
             ElevatedButton(
               onPressed: salvar,
               child: const Text("Salvar"),
+            ),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              onPressed: () async {
+                final manutencao = Manutencao(
+                  id: widget.manutencao?.id,
+                  equipamento: equipamentoController.text,
+                  descricao: descricaoController.text,
+                  data: dataController.text,
+                  status: "Concluído", // ← altera aqui
+                  responsavel: responsavelController.text,
+                  imagem: imagemSelecionada?.path,
+                );
+
+                await controller.updateManutencao(manutencao);
+
+                Navigator.pop(context);
+              },
+              child: const Text("Concluir Manutenção"),
             ),
           ],
         ),

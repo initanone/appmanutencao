@@ -18,7 +18,7 @@ class ManutencaoController {
   Future<int> updateManutencao(Manutencao m) async {
     return await db.updateManutencao(m);
   }
-  
+
   Future<int> deleteManutencao(int id) async {
     return await db.deleteManutencao(id);
   }
