@@ -6,6 +6,8 @@ class Manutencao {
   String status;
   String responsavel;
   String? imagem;
+  String cidade;
+  String problemaRelatado;
 
   Manutencao({
     this.id,
@@ -15,6 +17,8 @@ class Manutencao {
     required this.status,
     required this.responsavel,
     this.imagem,
+    required this.cidade,
+    required this.problemaRelatado,
   });
 
 
@@ -27,6 +31,8 @@ class Manutencao {
       'status': status,
       'responsavel': responsavel,
       'imagem': imagem,
+      'cidade': cidade,
+      'problemaRelatado': problemaRelatado,
     };
   }
 
@@ -40,6 +46,8 @@ class Manutencao {
       status: map['status'],
       responsavel: map['responsavel'],
       imagem: map['imagem'],
+      cidade: map['cidade'],
+      problemaRelatado: map['problemaRelatado'],
     );
   }
 }

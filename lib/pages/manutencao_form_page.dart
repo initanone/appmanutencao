@@ -21,7 +21,8 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
   final dataController = TextEditingController();
   final statusController = TextEditingController();
   final responsavelController = TextEditingController();
-
+  final cidadeController = TextEditingController();
+  final problemaRelatadoController = TextEditingController();
   final ImagePicker picker = ImagePicker();
   XFile? imagemSelecionada;
 
@@ -36,21 +37,23 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
     super.initState();
 
     if (widget.manutencao != null) {
-      // Modo edição
+
       equipamentoController.text = widget.manutencao!.equipamento;
       descricaoController.text = widget.manutencao!.descricao;
       dataController.text = widget.manutencao!.data;
       statusController.text = widget.manutencao!.status;
       responsavelController.text = widget.manutencao!.responsavel;
+      cidadeController.text = widget.manutencao!.cidade;
+      problemaRelatadoController.text = widget.manutencao!.problemaRelatado;
 
       if (widget.manutencao!.imagem != null) {
         imagemSelecionada = XFile(widget.manutencao!.imagem!);
       }
 
     } else {
-      // Nova manutenção → gera automaticamente
-      dataController.text = gerarDataAtual();     // <<< DATA AUTOMÁTICA
-      statusController.text = "Pendente";         // <<< STATUS AUTOMÁTICO
+
+      dataController.text = gerarDataAtual();
+      statusController.text = "Pendente";
     }
   }
   Future<void> escolherImagem() async {
@@ -67,6 +70,8 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
     descricaoController.dispose();
     dataController.dispose();
     responsavelController.dispose();
+    cidadeController.dispose();
+    problemaRelatadoController.dispose();
     super.dispose();
   }
 
@@ -80,7 +85,10 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
       data: dataController.text,
       responsavel: responsavelController.text,
       imagem: imagemSelecionada?.path,
+      cidade: cidadeController.text,
+      problemaRelatado: problemaRelatadoController.text,
     );
+
 
     if (widget.manutencao == null) {
       await controller.addManutencao(manutencao);
@@ -107,10 +115,19 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
               controller: equipamentoController,
               decoration: const InputDecoration(labelText: "Equipamento"),
             ),
+
             TextField(
-              controller: descricaoController,
-              decoration: const InputDecoration(labelText: "Descrição"),
+              controller: problemaRelatadoController,
+              decoration: const InputDecoration(labelText: "Problema relatado"),
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
             ),
+
+            TextField(
+              controller: cidadeController,
+              decoration: const InputDecoration(labelText: "Cidade de origem"),
+            ),
+
             TextField(
               controller: dataController,
               readOnly: true,
@@ -119,16 +136,27 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
 
             TextField(
               controller: statusController,
+              readOnly: true,
               decoration: const InputDecoration(labelText: "Status"),
             ),
 
             TextField(
               controller: responsavelController,
               decoration: const InputDecoration(labelText: "Responsável"),
-            ),const SizedBox(height: 20),
+            ),
+
+            TextField(
+              controller: descricaoController,
+              decoration: const InputDecoration(labelText: "Descrição da manutenção"),
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
+            ),
+
+            const SizedBox(height: 20),
             Text("Imagem do Equipamento", style: TextStyle(fontWeight: FontWeight.bold)),
 
             const SizedBox(height: 10),
+
 
             if (imagemSelecionada != null)
               Image.file(
@@ -158,9 +186,11 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
                   equipamento: equipamentoController.text,
                   descricao: descricaoController.text,
                   data: dataController.text,
-                  status: "Concluído", // ← altera aqui
+                  status: "Concluído",
                   responsavel: responsavelController.text,
                   imagem: imagemSelecionada?.path,
+                  cidade: cidadeController.text,
+                  problemaRelatado: problemaRelatadoController.text,
                 );
 
                 await controller.updateManutencao(manutencao);

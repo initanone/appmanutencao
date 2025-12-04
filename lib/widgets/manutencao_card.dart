@@ -15,7 +15,7 @@ class ManutencaoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Cor do card conforme o status
+
     Color corCard;
 
     if (manutencao.status.toLowerCase() == "pendente") {
@@ -28,7 +28,7 @@ class ManutencaoCard extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: onEdit, // ← Agora o card inteiro abre o formulário
+      onTap: onEdit,
       child: Card(
         color: corCard,
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -38,12 +38,12 @@ class ManutencaoCard extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
+            "Cidade: ${manutencao.cidade}\n"
             "Responsável: ${manutencao.responsavel}\n"
                 "Data: ${manutencao.data}\n"
                 "Status: ${manutencao.status}",
           ),
 
-          // Apenas o botão de deletar permanece
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: onDelete,
