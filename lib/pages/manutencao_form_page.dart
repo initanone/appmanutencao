@@ -21,42 +21,57 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
   final dataController = TextEditingController();
   final statusController = TextEditingController();
   final responsavelController = TextEditingController();
-
+  final cidadeController = TextEditingController();
+  final problemaRelatadoController = TextEditingController();
   final ImagePicker picker = ImagePicker();
   XFile? imagemSelecionada;
 
+  String gerarDataAtual() {
+    final agora = DateTime.now();
+    return "${agora.day.toString().padLeft(2, '0')}/"
+        "${agora.month.toString().padLeft(2, '0')}/"
+        "${agora.year}";
+  }
   @override
   void initState() {
     super.initState();
 
     if (widget.manutencao != null) {
+
       equipamentoController.text = widget.manutencao!.equipamento;
       descricaoController.text = widget.manutencao!.descricao;
       dataController.text = widget.manutencao!.data;
       statusController.text = widget.manutencao!.status;
       responsavelController.text = widget.manutencao!.responsavel;
+      cidadeController.text = widget.manutencao!.cidade;
+      problemaRelatadoController.text = widget.manutencao!.problemaRelatado;
 
       if (widget.manutencao!.imagem != null) {
         imagemSelecionada = XFile(widget.manutencao!.imagem!);
       }
+
+    } else {
+
+      dataController.text = gerarDataAtual();
+      statusController.text = "Pendente";
     }
   }
   Future<void> escolherImagem() async {
     final XFile? imagem = await picker.pickImage(source: ImageSource.gallery);
-    if (imagem != null) {
-      setState(() {
-        imagemSelecionada = imagem;
-      });
+    if (imagem != null) { setState(() { imagemSelecionada = imagem;
+    });
     }
   }
+
 
   @override
   void dispose() {
     equipamentoController.dispose();
     descricaoController.dispose();
     dataController.dispose();
-    statusController.dispose();
     responsavelController.dispose();
+    cidadeController.dispose();
+    problemaRelatadoController.dispose();
     super.dispose();
   }
 
@@ -66,11 +81,14 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
       id: widget.manutencao?.id,
       equipamento: equipamentoController.text,
       descricao: descricaoController.text,
+      status: widget.manutencao?.status ?? "Pendente",
       data: dataController.text,
-      status: statusController.text,
       responsavel: responsavelController.text,
       imagem: imagemSelecionada?.path,
+      cidade: cidadeController.text,
+      problemaRelatado: problemaRelatadoController.text,
     );
+
 
     if (widget.manutencao == null) {
       await controller.addManutencao(manutencao);
@@ -97,25 +115,48 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
               controller: equipamentoController,
               decoration: const InputDecoration(labelText: "Equipamento"),
             ),
+
             TextField(
-              controller: descricaoController,
-              decoration: const InputDecoration(labelText: "Descrição"),
+              controller: problemaRelatadoController,
+              decoration: const InputDecoration(labelText: "Problema relatado"),
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
             ),
+
+            TextField(
+              controller: cidadeController,
+              decoration: const InputDecoration(labelText: "Cidade de origem"),
+            ),
+
             TextField(
               controller: dataController,
+              readOnly: true,
               decoration: const InputDecoration(labelText: "Data"),
             ),
+
             TextField(
               controller: statusController,
+              readOnly: true,
               decoration: const InputDecoration(labelText: "Status"),
             ),
+
             TextField(
               controller: responsavelController,
               decoration: const InputDecoration(labelText: "Responsável"),
-            ),const SizedBox(height: 20),
+            ),
+
+            TextField(
+              controller: descricaoController,
+              decoration: const InputDecoration(labelText: "Descrição da manutenção"),
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
+            ),
+
+            const SizedBox(height: 20),
             Text("Imagem do Equipamento", style: TextStyle(fontWeight: FontWeight.bold)),
 
             const SizedBox(height: 10),
+
 
             if (imagemSelecionada != null)
               Image.file(
@@ -133,6 +174,30 @@ class _ManutencaoFormPageState extends State<ManutencaoFormPage> {
             ElevatedButton(
               onPressed: salvar,
               child: const Text("Salvar"),
+            ),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              onPressed: () async {
+                final manutencao = Manutencao(
+                  id: widget.manutencao?.id,
+                  equipamento: equipamentoController.text,
+                  descricao: descricaoController.text,
+                  data: dataController.text,
+                  status: "Concluído",
+                  responsavel: responsavelController.text,
+                  imagem: imagemSelecionada?.path,
+                  cidade: cidadeController.text,
+                  problemaRelatado: problemaRelatadoController.text,
+                );
+
+                await controller.updateManutencao(manutencao);
+
+                Navigator.pop(context);
+              },
+              child: const Text("Concluir Manutenção"),
             ),
           ],
         ),

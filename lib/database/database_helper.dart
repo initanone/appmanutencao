@@ -20,7 +20,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _upgradeTables,
     );
@@ -35,13 +35,20 @@ class DatabaseHelper {
         data TEXT NOT NULL,
         status TEXT NOT NULL,
         responsavel TEXT NOT NULL,
+        cidade TEXT,
+        problemaRelatado TEXT,
         imagem TEXT
+             
       )
     ''');
   }
   Future<void> _upgradeTables(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute("ALTER TABLE manutencoes ADD COLUMN imagem TEXT;");
+    }
+    if (oldVersion < 3) {
+      await db.execute("ALTER TABLE manutencoes ADD COLUMN cidade TEXT;");
+      await db.execute("ALTER TABLE manutencoes ADD COLUMN problemaRelatado TEXT;");
     }
   }
 
