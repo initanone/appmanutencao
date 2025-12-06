@@ -32,7 +32,17 @@ class _ManutencaoListPageState extends State<ManutencaoListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
         title: const Text("Manutenções"),
+        backgroundColor: Colors.blue[200],
+        foregroundColor: Colors.black,
+        shadowColor: Colors.black,
+        elevation: 900,
+
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -50,6 +60,7 @@ class _ManutencaoListPageState extends State<ManutencaoListPage> {
         itemCount: lista.length,
           itemBuilder: (context, index) {
             final m = lista[index];
+
 
             return ManutencaoCard(
               manutencao: m,
